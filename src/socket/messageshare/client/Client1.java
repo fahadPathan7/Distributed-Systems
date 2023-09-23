@@ -6,35 +6,35 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client1 {
-    private static DataOutputStream dataOutputStream = null;
     private static DataInputStream dataInputStream = null;
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
         try {
-            Socket socket = new Socket("localhost", 5000);
+            Socket socket = new Socket("localhost", 5000); // connecting to the server
             dataInputStream = new DataInputStream(socket.getInputStream());
-            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-            // Start a thread to handle server messages
+            // Starting a thread to handle server messages
             Thread serverListener = new Thread(() -> {
                 try {
                     while (true) {
-                        String message = dataInputStream.readUTF();
-                        System.out.println("[SERVER] " + message);
+                        String message = dataInputStream.readUTF(); // reading the message from the server
+                        System.out.println("[FROM SERVER] " + message); // printing the message from the server
                     }
                 } catch (Exception e) {
                     System.out.println(e);
                 }
             });
-            serverListener.start();
+            serverListener.start(); // starting the thread
 
             while (true) {
-                //System.out.print("input> ");
-                String message = "client1: " + scanner.nextLine();
-                dataOutputStream.writeUTF(message);
-                if (message.equalsIgnoreCase("_stop"))
-                    break;
+                // System.out.print("\n input> ");
+                String message = "client1: " + scanner.nextLine(); // reading the message from the client
+                dataOutputStream.writeUTF(message); // sending the message to the server
+
+                // condition to stop the client
+                if (message.equalsIgnoreCase("_stop")) break;
             }
         } catch (Exception e) {
             System.out.println(e);
